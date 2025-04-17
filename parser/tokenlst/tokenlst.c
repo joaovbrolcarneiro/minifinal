@@ -14,28 +14,17 @@
 #include "minishell.h"        // Adjust includes as necessary
 #include "minishell_part2.h"
 
-// size_t ft_strnlen(char *s, char n); // Assume declared elsewhere (libft.h)
-// char *get_envar(char **env, char *var); // Assume declared elsewhere
 
-
-/**
- * @brief Gets the list of directories from the PATH environment variable.
- * Caller must free the returned array and its contents.
- *
- * @param env Environment variables.
- * @return char** Array of path strings, or NULL if PATH not set/empty.
- */
+ 
 char **get_path_list(char **env)
 {
     char *path;
     char **path_list;
 
-    // Assuming get_env_value is the correct function now
-    path = get_env_value(env,"PATH"); // Use get_env_value instead of get_envar?
+    path = get_env_value(env,"PATH");
     if (!path)
-        return (NULL); // Handle PATH not existing
+        return (NULL); 
     path_list = ft_split(path, ':');
-    // No need to free 'path' as it points into the env array
     return (path_list);
 }
 
@@ -159,44 +148,53 @@ cleanup: // Label for cleanup
  */
 bool search_list(char *search, char **env)
 {
-    char **list = NULL; // Initialize to NULL
-    // int i = 0; // REMOVED - Unused
-    // long long count; // REMOVED - Unused and uninitialized
-
-    // Check if 'search' is itself a valid executable path first
+    char **list = NULL;
+   
     if(is_valid_exc(search))
         return (true);
 
-    // Check for NULL search string or env
     if (!search || !env)
         return (false);
 
-    // Initialize the command list from PATH
-    list = init_command_list(env); // MODIFIED call
-    if (!list) {
-         // Error during command list initialization (e.g., malloc failure)
-         // Should probably print an error or handle it
+    list = init_command_list(env);
+    if (!list) 
+    {
          return (false);
     }
-
-
-    // Iterate through the generated list (note: modifies 'list' pointer)
-    // Use a temporary pointer to iterate if needed elsewhere
     char **current = list;
-    while (*current) // Iterate until NULL terminator
+    while (*current)
     {
-        if(ft_strcmp(search, *current) == 0) // Use strcmp for exact match
+        if(ft_strcmp(search, *current) == 0)
         {
-            ft_free_strarray(list); // Free the list before returning true
+            ft_free_strarray(list);
             return(true);
         }
-        current++; // Move to next command name in the list
+        current++;
     }
 
-    ft_free_strarray(list); // Free the list if command not found
+    ft_free_strarray(list);
     return(false);
 }
 
+
+
+char *get_envar(char **env, char *var)
+{
+	int i;
+
+	i = -1;
+	/*if (*var == '$')
+		var ++;
+	else
+		return (NULL);*/
+	while (env[++i])
+	{
+		if (ft_strncmp(env[i], var, ft_strnlen(env[i], '=')) == 0 \
+		&& ft_strncmp(env[i], var, ft_strlen(var)) == 0)
+			return (env[i] + ft_strnlen(env[i], '=') + 1);
+	}
+	return (NULL);
+}
 
 
 
@@ -384,20 +382,3 @@ bool search_list(char *search, char **env)
 //#include "../../includes/minishell.h"
 //#include "minishell_part2.h"
 //
-char *get_envar(char **env, char *var)
-{
-	int i;
-
-	i = -1;
-	/*if (*var == '$')
-		var ++;
-	else
-		return (NULL);*/
-	while (env[++i])
-	{
-		if (ft_strncmp(env[i], var, ft_strnlen(env[i], '=')) == 0 \
-		&& ft_strncmp(env[i], var, ft_strlen(var)) == 0)
-			return (env[i] + ft_strnlen(env[i], '=') + 1);
-	}
-	return (NULL);
-}

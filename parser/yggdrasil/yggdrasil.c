@@ -6,7 +6,7 @@
 /*   By: jbrol-ca <jbrol-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 17:25:45 by hde-barr          #+#    #+#             */
-/*   Updated: 2025/04/17 18:06:40 by jbrol-ca         ###   ########.fr       */
+/*   Updated: 2025/04/17 19:45:32 by jbrol-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,37 @@ t_node_tree *new_yggnode(t_token *token)
     t_node_tree *new_node;
 
     new_node = hb_malloc(sizeof(t_node_tree));
+	if (!new_node) 
+	{ 
+        return (NULL);
+    }
+    if (!token) 
+	{
+        free(new_node);
+        return (NULL);
+    }
+    if (token->used == true)
+	{
+        free(new_node);
+        return (NULL);
+    }
+    token->used = true;
+    new_node->right = NULL;
+    new_node->left = NULL;
+    new_node->content = token->value;
+    new_node->type = (t_ast_type)token->type;
+    new_node->rank = token->rank;
+    new_node->args = token->args;
+    new_node->file = token->file;
+    return (new_node);
+}
+
+/*funcao antiga
+t_node_tree *new_yggnode(t_token *token)
+{
+    t_node_tree *new_node;
+
+    new_node = hb_malloc(sizeof(t_node_tree));
     if (!new_node)
 	{
         return (NULL);
@@ -87,17 +118,17 @@ t_node_tree *new_yggnode(t_token *token)
 	token->used = true;
 	new_node->right = NULL;
 	new_node->left = NULL;
-	//if (!new_node->right || !new_node->left)
-	//	return (NULL);
+	if (!new_node->right || !new_node->left)
+		return (NULL);
 	new_node->content = token->value;
 	new_node->type = (t_ast_type)token->type;
 	new_node->rank = token->rank;
 	new_node->args = token->args;
 	new_node->file = token->file;
     return (new_node);
-}
+}*/
 
-t_node_tree	*make_yggdrasil(t_token *t, t_token *f, t_token *e, t_node_tree *y)
+t_node_tree	*make_yggdrasil(t_token *t, t_token *f, t_token *e, t_node_tree *y)////////yggdrasil
 {
 	//validation_tree(t, f);
 	//take_args();

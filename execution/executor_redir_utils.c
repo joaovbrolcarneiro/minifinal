@@ -106,7 +106,7 @@ int	handle_word_token_execution(t_node_tree *node)
 	if (node && node->content)
 		cmd_name = node->content;
 	else
-		cmd_name = "unknown"; // Should not happen often
+		cmd_name = "unknown";
 	ft_printf(RED "konosubash: %s: command not found\n" RESET, cmd_name);
-	return (127); // Command not found status
+	return (127);
 }
