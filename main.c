@@ -20,33 +20,6 @@ int	g_exit_code = 0;
 ** - If the trimmed input equals "pwd", prints the current directory.
 */
 
-void	is_minishell_exit(char *input)
-{
-	char	*res;
-
-	res = ft_strtrim(input, " ");
-	if (!res)
-		return ;
-	if (ft_strcmp("exit", res) == 0)
-	{
-		free(res);
-		exit(0);
-	}
-	free(res);
-}
-
-/* Helper function to check for parser errors in token list */
-bool	has_parser_error(t_token *token)
-{
-	while (token)
-	{
-		if (token->err)
-			return (true);
-		token = token->next;
-	}
-	return (false);
-}
-
 void	typealize_call_loop(t_token *token, char **env)
 {
 	t_token	*current_token;
@@ -125,12 +98,4 @@ bool	is_builtin(const char *cmd)
 		return (true);
 	}
 	return (false);
-}
-
-char *ft_strcpy(char *dest, const char *src)
-{
-    char *tmp = dest;
-    while ((*dest++ = *src++))
-        ;
-    return tmp;
 }

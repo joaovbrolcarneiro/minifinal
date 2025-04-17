@@ -100,20 +100,6 @@ static int	create_link_token(t_token **lst_ptr, char *input_segment, int len)
 	return (0);
 }
 
-/* Handles end conditions and returns the final list head */
-static t_token	*finalize_list(t_token *first, t_token *last)
-{
-	if (last)
-		last->next = NULL;
-	if (!first || !first->value)
-	{
-		if (first)
-			free(first);
-		return (NULL);
-	}
-	return (first);
-}
-
 /* Main token splitting function */
 t_token	*split_input(char *input, int i) /////////split_input ( mexi-joao)
 {

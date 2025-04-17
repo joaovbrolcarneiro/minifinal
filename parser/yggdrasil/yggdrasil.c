@@ -6,7 +6,7 @@
 /*   By: jbrol-ca <jbrol-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 17:25:45 by hde-barr          #+#    #+#             */
-/*   Updated: 2025/04/17 19:45:32 by jbrol-ca         ###   ########.fr       */
+/*   Updated: 2025/04/17 21:30:35 by jbrol-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,9 +77,7 @@ t_node_tree *new_yggnode(t_token *token)
 
     new_node = hb_malloc(sizeof(t_node_tree));
 	if (!new_node) 
-	{ 
         return (NULL);
-    }
     if (!token) 
 	{
         free(new_node);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hde-barr <hde-barr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jbrol-ca <jbrol-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 21:51:16 by hde-barr          #+#    #+#             */
-/*   Updated: 2025/04/04 21:51:32 by hde-barr         ###   ########.fr       */
+/*   Updated: 2025/04/17 21:35:49 by jbrol-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,4 +34,31 @@ bool is_regular_file(const char *path)
 bool is_valid_exc(const char *path)
 {
 	return (is_regular_file(path) && is_executable(path));
+}
+
+void	is_minishell_exit(char *input)
+{
+	char	*res;
+
+	res = ft_strtrim(input, " ");
+	if (!res)
+		return ;
+	if (ft_strcmp("exit", res) == 0)
+	{
+		free(res); // free?
+		exit(0);
+	}
+	free(res); // free?
+}
+
+/* Helper function to check for parser errors in token list */
+bool	has_parser_error(t_token *token)
+{
+	while (token)
+	{
+		if (token->err)
+			return (true);
+		token = token->next;
+	}
+	return (false);
 }

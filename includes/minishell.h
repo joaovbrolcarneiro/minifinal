@@ -253,5 +253,6 @@ char	**get_path_list(char **env);
 char	**command_list_malloc(char **env);
 int	populate_command_list(char **list, char **env);
 char	**init_command_list(char **env);
+t_token	*finalize_list(t_token *first, t_token *last);
 
  #endif

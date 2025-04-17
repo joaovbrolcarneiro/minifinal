@@ -6,7 +6,7 @@
 /*   By: jbrol-ca <jbrol-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 15:39:45 by hde-barr          #+#    #+#             */
-/*   Updated: 2025/04/17 19:20:47 by jbrol-ca         ###   ########.fr       */
+/*   Updated: 2025/04/17 21:31:27 by jbrol-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,4 +54,11 @@ long long get_token_id(void)
 
 	return (id++);
 }
-	
+
+char *ft_strcpy(char *dest, const char *src)
+{
+    char *tmp = dest;
+    while ((*dest++ = *src++))
+        ;
+    return tmp;
+}

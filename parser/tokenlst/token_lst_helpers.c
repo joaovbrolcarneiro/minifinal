@@ -75,9 +75,9 @@ bool	search_list(char *search, char **env)
 
 	if (!search || !env)
 		return (false);
-	if (is_valid_exc(search)) // Assumes declared elsewhere
+	if (is_valid_exc(search))
 		return (true);
-	list = init_command_list(env); // Assumes declared elsewhere
+	list = init_command_list(env);
 	if (!list)
 		return (false);
 	current = list;
@@ -93,4 +93,18 @@ bool	search_list(char *search, char **env)
 	}
 	ft_free_strarray(list);
 	return (found);
+}
+
+/* Handles end conditions and returns the final list head */
+t_token	*finalize_list(t_token *first, t_token *last)
+{
+	if (last)
+		last->next = NULL;
+	if (!first || !first->value)
+	{
+		if (first)
+			free(first);
+		return (NULL);
+	}
+	return (first);
 }
