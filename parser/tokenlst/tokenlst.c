@@ -1,41 +1,42 @@
 /* ************************************************************************** */
 /* */
 /* :::      ::::::::   */
-/* tokenlst.c                                         :+:      :+:    :+:   */
+/* tokenlst_path.c                                    :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
 /* By: hde-barr <hde-barr@student.42.fr>          +#+  +:+       +#+        */
-/* */ /* Updated: 2025/04/17 20:10:00 by hde-barr         ###   ########.fr       */
+/* */ /* Updated: 2025/04/17 20:30:00 by hde-barr         ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "minishell_part2.h" // Or relevant header for get_env_value etc.
+#include "minishell_part2.h" // For get_env_value if not in minishell.h
 #include <dirent.h>          // For opendir, readdir, closedir
-#include <sys/stat.h>        // For stat, S_ISDIR used in is_valid_exc
 
-/* Gets list of directories from PATH env var */
-char	**get_path_list(char **env)
-{
-	char	*path;
-	char	**path_list;
-
-	// Use get_envar as requested, ensure it's declared if needed elsewhere
-	path = get_envar(env, "PATH");
-	if (!path)
-		return (NULL);
-	path_list = ft_split(path, ':');
-	// `path` points into env, no free needed here
-	return (path_list);
-}
-
-/* Helper: Counts command names in PATH dirs */
-static long long	count_commands_in_path(char **env)
+/* Helper: Counts command names in PATH directories */
+static long long	count_dir_entries(DIR *dir)
 {
 	long long		count;
-	DIR				*dir;
-	char			**path_list;
 	struct dirent	*entry;
-	int				i;
+
+	count = 0;
+	while (1) // Use infinite loop + break
+	{
+		entry = readdir(dir);
+		if (!entry)
+			break ;
+		count++;
+	}
+	return (count);
+}
+
+/* Counts command names in PATH dirs */
+/* Assumes get_path_list, ft_free_strarray are defined */
+long long	count_commands_in_path(char **env)
+{
+	long long	count;
+	DIR			*dir;
+	char		**path_list;
+	int			i;
 
 	count = 0;
 	path_list = get_path_list(env);
@@ -47,12 +48,7 @@ static long long	count_commands_in_path(char **env)
 		dir = opendir(path_list[i]);
 		if (dir != NULL)
 		{
-			entry = readdir(dir); // Initial read
-			while (entry != NULL) // Check loop condition
-			{
-				count++;
-				entry = readdir(dir); // Read next inside loop
-			}
+			count += count_dir_entries(dir);
 			closedir(dir);
 		}
 		i++;
@@ -61,62 +57,64 @@ static long long	count_commands_in_path(char **env)
 	return (count);
 }
 
-/* Allocates memory for command list based on PATH */
-char	**command_list_malloc(char **env)
+/* Helper: Populates list with entries from a single directory */
+/* Returns 0 on success, 1 on failure */
+static int	populate_list_from_dir(char **list, DIR *dir, \
+									long long *current_index)
 {
-	long long	count;
-	char		**allocated_list;
+	struct dirent	*d;
 
-	allocated_list = NULL;
-	count = count_commands_in_path(env);
-	if (count < 0)
-		return (NULL);
-	allocated_list = malloc(sizeof(char *) * (count + 1));
-	if (!allocated_list)
-		perror("minishell: malloc command list");
-	return (allocated_list);
+	while (1) // Use infinite loop + break
+	{
+		d = readdir(dir);
+		if (!d)
+			break ;
+		list[*current_index] = ft_strdup(d->d_name);
+		if (!list[*current_index])
+		{
+			perror("minishell: strdup command list");
+			closedir(dir); // Close dir before returning error
+			return (1);
+		}
+		(*current_index)++;
+	}
+	closedir(dir); // Close dir on success too
+	return (0);
 }
 
-/* Helper: Populates list with command names from PATH */
+/* Populates pre-allocated list with command names from PATH */
 /* Returns 0 on success, 1 on failure */
-static int	populate_command_list(char **list, char **env)
+/* Assumes get_path_list, ft_free_strarray are defined */
+int	populate_command_list(char **list, char **env)
 {
-	char			**path_list;
-	DIR				*dir;
-	struct dirent	*d;
-	long long		current_index;
-	int				path_idx;
+	char		**path_list;
+	DIR			*dir;
+	long long	current_index;
+	int			path_idx;
+	int			status;
 
 	current_index = 0;
 	path_list = get_path_list(env);
 	if (!path_list)
 		return (1);
 	path_idx = 0;
-	while (path_list[path_idx])
+	status = 0;
+	while (path_list[path_idx] && status == 0)
 	{
-		dir = opendir(path_list[path_idx++]);
+		dir = opendir(path_list[path_idx]);
 		if (dir != NULL)
-		{
-			while (1) // Separate assignment and check
-			{
-				d = readdir(dir);
-				if (!d)
-					break ;
-				list[current_index] = ft_strdup(d->d_name);
-				if (!list[current_index])
-					return (perror("strdup"), closedir(dir), \
-							ft_free_strarray(path_list), 1); // No goto
-				current_index++;
-			}
-			closedir(dir);
-		}
+			status = populate_list_from_dir(list, dir, &current_index);
+		path_idx++;
 	}
-	list[current_index] = NULL;
+	list[current_index] = NULL; // Null-terminate list
 	ft_free_strarray(path_list);
+	if (status != 0) // Check status after loop
+		return (1);
 	return (0);
 }
 
 /* Creates a list of potential command names from PATH directories */
+/* Assumes command_list_malloc, populate_command_list, ft_free_strarray defined */
 char	**init_command_list(char **env)
 {
 	char	**list;
@@ -128,66 +126,12 @@ char	**init_command_list(char **env)
 	populate_status = populate_command_list(list, env);
 	if (populate_status != 0)
 	{
-		ft_free_strarray(list); // Free list if population failed
+		ft_free_strarray(list);
 		return (NULL);
 	}
 	return (list);
 }
 
-/* Searches for a command in PATH or checks if it's a valid executable path */
-bool	search_list(char *search, char **env)
-{
-	char	**list;
-	char	**current;
-	bool	found;
-
-	if (!search || !env)
-		return (false);
-	if (is_valid_exc(search))
-		return (true);
-	list = init_command_list(env);
-	if (!list)
-		return (false);
-	current = list;
-	found = false;
-	while (*current)
-	{
-		if (ft_strcmp(search, *current) == 0)
-		{
-			found = true;
-			break ;
-		}
-		current++;
-	}
-	ft_free_strarray(list);
-	return (found);
-}
-
-/* Gets environment variable value using allowed functions */
-char	*get_envar(char **env, char *var)
-{
-	int		i;
-	size_t	var_len;
-	char	*eq_ptr;
-	size_t	key_len;
-
-	i = 0;
-	if (!env || !var)
-		return (NULL);
-	var_len = ft_strlen(var);
-	while (env[i])
-	{
-		eq_ptr = ft_strchr(env[i], '=');
-		if (eq_ptr) // Check if '=' exists
-		{
-			key_len = eq_ptr - env[i]; // Calculate length of key part
-			if (key_len == var_len && ft_strncmp(env[i], var, key_len) == 0)
-				return (eq_ptr + 1); // Return pointer to value part
-		}
-		i++;
-	}
-	return (NULL);
-}
 
 
 /*t_token	*last_node(t_token *lst)
