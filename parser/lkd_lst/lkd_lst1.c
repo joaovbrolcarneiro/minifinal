@@ -6,7 +6,7 @@
 /*   By: jbrol-ca <jbrol-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 16:38:32 by hde-barr          #+#    #+#             */
-/*   Updated: 2025/04/17 16:47:37 by jbrol-ca         ###   ########.fr       */
+/*   Updated: 2025/04/18 18:15:43 by jbrol-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,17 +66,18 @@ t_token *untie_node(t_token *node, t_token *lst)
 	return (prev->next);
 }
 
-t_token *rm_node_lst(t_token *token, t_token *first)
+t_token	*rm_node_lst(t_token *token, t_token *first) // alterei - JOAO
 {
-    t_token *prev;
+	t_token	*prev;
 
-    if(!token || !first)
-        return (NULL);
-    prev = get_prev_node(token, first);
-    if(!prev)
-        return (NULL);
-    prev->next = token->next;
-    return (token);
+	if (!token || !first || token == first)
+		return (NULL);
+	prev = get_prev_node(token, first);
+	if (!prev)
+		return (NULL);
+	prev->next = token->next;
+	token->next = NULL; // adicionei isso aqui - joao
+	return (token);
 }
 
 void	add_node_lst(t_token *dst_lst, t_token *token)

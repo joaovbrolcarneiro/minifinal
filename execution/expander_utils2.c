@@ -24,7 +24,7 @@ static int	realloc_exp_buffer(char **buf, size_t len, size_t *cap)
 		new_cap = 128;
 	new_buf = malloc(new_cap);
 	if (!new_buf)
-		return (perror("minishell: expander realloc"), 0);
+		return (perror("konosubash: expander realloc"), 0);
 	i = 0;
 	if (*buf)
 	{

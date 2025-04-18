@@ -64,9 +64,9 @@ static int	parse_exit_arg(char *arg_str, int *exit_val)
 {
 	if (!is_str_numeric(arg_str))
 	{
-		ft_putstr_fd("minishell: exit: ", 2);
+		ft_putstr_fd("konosubash: exit: ", 2);
 		ft_putstr_fd(arg_str, 2);
-		ft_putstr_fd(": numeric argument required\n", 2);
+		ft_putstr_fd("konosubash: numeric argument required\n", 2);
 		*exit_val = 2;
 		return (1);
 	}
@@ -92,7 +92,7 @@ int	ft_exit(char **args, t_shell *shell)
 			cleanup_shell(shell);
 			exit(exit_val);
 			if (args[2])
-				ft_putstr_fd("minishell: exit: too many arguments\n", 2);
+				ft_putstr_fd("konosubash: exit: too many arguments\n", 2);
 			return (1);
 		}
 	}

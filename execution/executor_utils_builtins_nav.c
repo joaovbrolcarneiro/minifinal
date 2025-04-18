@@ -19,7 +19,7 @@ static char	*handle_cd_dash(char **env)
 
 	target = get_env_value(env, "OLDPWD");
 	if (!target)
-		ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2);
+		ft_putstr_fd("konosubash: cd: OLDPWD not set\n", 2);
 	else
 	{
 		ft_putstr_fd(target, 1);
@@ -39,7 +39,7 @@ static char	*get_cd_target(char **args, char **env)
 	{
 		env_val = get_env_value(env, "HOME");
 		if (!env_val)
-			ft_putstr_fd("minishell: cd: HOME not set\n", 2);
+			ft_putstr_fd("konosubash: cd: HOME not set\n", 2);
 		target = env_val;
 	}
 	else if (ft_strcmp(args[1], "-") == 0)
@@ -59,7 +59,7 @@ static int	perform_chdir_and_update(char *target, char *prev_dir, \
 
 	if (chdir(target) != 0)
 	{
-		perror("minishell: cd");
+		perror("konosubash: cd");
 		free(prev_dir);
 		return (1);
 	}
@@ -67,7 +67,7 @@ static int	perform_chdir_and_update(char *target, char *prev_dir, \
 	free(prev_dir);
 	new_dir = getcwd(NULL, 0);
 	if (!new_dir)
-		return (perror("minishell: cd: getcwd(after)"), 1);
+		return (perror("konosubash: cd: getcwd(after)"), 1);
 	update_env(env, "PWD", new_dir);
 	free(new_dir);
 	return (0);
@@ -81,7 +81,7 @@ int	ft_cd(char **args, char ***env)
 
 	prev_dir = getcwd(NULL, 0);
 	if (!prev_dir)
-		return (perror("minishell: cd: getcwd(before)"), 1);
+		return (perror("konosubash: cd: getcwd(before)"), 1);
 	target = get_cd_target(args, *env);
 	if (!target)
 	{
@@ -104,7 +104,7 @@ int	ft_pwd(void)
 	}
 	else
 	{
-		perror("minishell: pwd");
+		perror("konosubash: pwd");
 		return (1);
 	}
 }

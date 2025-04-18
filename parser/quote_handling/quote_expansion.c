@@ -10,8 +10,8 @@
 /* */
 /* ************************************************************************** */
 
-#include "minishell.h"
-#include "minishell_part2.h"
+#include "../../includes/minishell.h"
+#include "../../includes/minishell_part2.h"
 
 
 /* Helper for counter: processes one '$' expansion */
@@ -79,7 +79,7 @@ static bool	copy_expansion_part(t_exp_cpy_vars *v, char *input, char **env)
 	return (true);
 }
 
-/* Copies input to dst, expanding $VAR (for double quotes) */
+/* Copies input to dst, expanding $VAR (for double quotes) l tem 26 linhas mas assumo que alguma linha comentada vai deletar*/
 char	*quote_handler_cpy(int total_len, char *input, char **env)
 {
 	t_exp_cpy_vars	v;
@@ -93,10 +93,9 @@ char	*quote_handler_cpy(int total_len, char *input, char **env)
 		return (ft_strdup("$"));
 	}
 	// free(trimmed_input); // free?
-
 	v.dst = ft_calloc(sizeof(char), total_len + 1);
 	if (!v.dst)
-		return (perror("minishell: calloc quote_handler_cpy"), NULL);
+		return (perror("konosubash: calloc quote_handler_cpy"), NULL);
 	v.i = 0;
 	v.count = 0;
 	success = true;

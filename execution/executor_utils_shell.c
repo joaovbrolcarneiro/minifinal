@@ -66,7 +66,7 @@ void	init_shell(t_shell *shell, char **env)
 	shell->saved_stdout = dup(STDOUT_FILENO);
 	if (shell->saved_stdin == -1 || shell->saved_stdout == -1 || !shell->env)
 	{
-		perror("minishell: init_shell resource allocation failed");
+		perror("konosubash: init_shell resource allocation failed");
 		if (shell->saved_stdin != -1)
 			close(shell->saved_stdin);
 		if (shell->saved_stdout != -1)

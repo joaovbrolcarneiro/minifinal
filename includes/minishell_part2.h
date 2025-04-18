@@ -104,7 +104,7 @@ void handler_pipes(t_token_vec *token_vec);/////////handler_pipes
 t_token *remap_lst(t_token *token);///////////////lkd_lst2
 void handle_ctrl_c(int sig);///////////////handler_ctrl_c
 void is_minishell_exit(char *input);//////not to use
-bool merge_to_token_exception(t_token *token);/////quote_handling/merge_to_token_exception
+bool	merge_to_token_exception(t_token *token, t_token *list_head);
 void parser_cmd_no_found(t_token *token, char **env);///////exceptions_msg/parser_cmd_no_found
 void quote_handler_call_loop(t_token *token, char **env);///////call_loops
 void typealize_call_loop(t_token *token, char **env);/////////call_loops

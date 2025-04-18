@@ -21,10 +21,10 @@ int	handle_redir_in(t_node_tree *node)
 		return (0);
 	fd = open(node->file, O_RDONLY);
 	if (fd < 0)
-		return (perror("minishell: open redir in"), -1);
+		return (perror("konosubash: open redir in"), -1);
 	if (dup2(fd, STDIN_FILENO) == -1)
 	{
-		perror("minishell: dup2 redir in");
+		perror("konosubash: dup2 redir in");
 		close(fd);
 		return (-1);
 	}
@@ -41,10 +41,10 @@ int	handle_redir_out(t_node_tree *node)
 		return (0);
 	fd = open(node->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
-		return (perror("minishell: open redir out"), -1);
+		return (perror("konosubash: open redir out"), -1);
 	if (dup2(fd, STDOUT_FILENO) == -1)
 	{
-		perror("minishell: dup2 redir out");
+		perror("konosubash: dup2 redir out");
 		close(fd);
 		return (-1);
 	}
@@ -61,10 +61,10 @@ int	handle_append(t_node_tree *node)
 		return (0);
 	fd = open(node->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
-		return (perror("minishell: open append"), -1);
+		return (perror("konosubash: open append"), -1);
 	if (dup2(fd, STDOUT_FILENO) == -1)
 	{
-		perror("minishell: dup2 append");
+		perror("konosubash: dup2 append");
 		close(fd);
 		return (-1);
 	}
@@ -86,7 +86,7 @@ static int	process_heredoc_pipe(int pipefd[2], const char *delimiter)
 	}
 	if (dup2(pipefd[0], STDIN_FILENO) == -1)
 	{
-		perror("minishell: dup2 heredoc");
+		perror("konosubash: dup2 heredoc");
 		close(pipefd[0]);
 		return (-1);
 	}
@@ -102,11 +102,11 @@ int	handle_heredoc(t_node_tree *node)
 
 	if (!node || !node->file)
 	{
-		ft_putstr_fd("minishell: Heredoc node missing delimiter\n", 2);
+		ft_putstr_fd("konosubash: Heredoc node missing delimiter\n", 2);
 		return (-1);
 	}
 	delimiter = node->file;
 	if (pipe(pipefd) == -1)
-		return (perror("minishell: pipe heredoc"), -1);
+		return (perror("konosubash: pipe heredoc"), -1);
 	return (process_heredoc_pipe(pipefd, delimiter));
 }

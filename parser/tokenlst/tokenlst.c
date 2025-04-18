@@ -72,7 +72,7 @@ static int	populate_list_from_dir(char **list, DIR *dir, \
 		list[*current_index] = ft_strdup(d->d_name);
 		if (!list[*current_index])
 		{
-			perror("minishell: strdup command list");
+			perror("konosubash: strdup command list");
 			closedir(dir); // Close dir before returning error
 			return (1);
 		}

@@ -6,12 +6,12 @@
 /*   By: jbrol-ca <jbrol-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 17:38:59 by hde-barr          #+#    #+#             */
-/*   Updated: 2025/04/17 16:52:29 by jbrol-ca         ###   ########.fr       */
+/*   Updated: 2025/04/18 18:08:13 by jbrol-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-#include "minishell_part2.h"
+#include "../../includes/minishell.h"
+#include "../../includes/minishell_part2.h"
 
 t_token *rm_node_lst(t_token *token, t_token *first);
 
@@ -24,7 +24,7 @@ t_token *rm_node_lst(t_token *token, t_token *first);
 }
 */
 
-void	join_and_split(t_token *priv, t_token *token) // ALTEREI - JOAO
+/*void	join_and_split(t_token *priv, t_token *token) FUNCAO ANTIGA
 {
 	char	*temp_join1;
 	char	*temp_join2;
@@ -50,6 +50,45 @@ void	join_and_split(t_token *priv, t_token *token) // ALTEREI - JOAO
 		ft_free_strarray(args_to_free);
 	if (!priv->args)
 		perror("minishell: join_and_split: ft_split");
+}*/
+
+static char	*create_full_join_str(t_token *priv, t_token *token)
+{
+	char	*temp_join1;
+	char	*temp_join2;
+	char	*priv_val_or_empty;
+
+	priv_val_or_empty = priv->value;
+	if (!priv_val_or_empty)
+		priv_val_or_empty = "";
+	temp_join1 = ft_strjoin(priv_val_or_empty, "\x1F");
+	if (!temp_join1)
+		return (perror("konosubash: join_and_split: strjoin1"), NULL);
+	temp_join2 = ft_strjoin(temp_join1, token->value);
+	free(temp_join1); // free?
+	if (!temp_join2)
+		return (perror("konosubash: join_and_split: strjoin2"), NULL);
+	return (temp_join2);
+}
+
+/* Joins values using separator, splits into args, handles memory */
+void	join_and_split(t_token *priv, t_token *token)
+{
+	char	*full_str;
+	char	**args_to_free;
+
+	if (!priv || !token || !token->value)
+		return ;
+	args_to_free = priv->args;
+	full_str = create_full_join_str(priv, token);
+	if (!full_str)
+		return ;
+	priv->args = ft_split(full_str, '\x1F');
+	free(full_str); // free?
+	if (args_to_free)
+		ft_free_strarray(args_to_free); // free?
+	if (!priv->args)
+		perror("konosubash: join_and_split: ft_split");
 }
 
 /* FUNCAO ANTIGA
@@ -68,13 +107,15 @@ t_token *redir_handler_file(t_token *token ,t_token *first)
 */
 
 
-t_token	*redir_handler_file(t_token *token, t_token *first) // alterei  - joao
+t_token	*redir_handler_file(t_token *token, t_token *first)
 {
 	t_token	*file_node;
 
 	if (!token || token->coretype != REDIR || !token->next || \
-		token->next->rank == RANK_S)
+		token->next->type != TOKEN_WORD)
+	{
 		return (token);
+	}
 	file_node = rm_node_lst(token->next, first);
 	if (file_node)
 	{
@@ -83,49 +124,45 @@ t_token	*redir_handler_file(t_token *token, t_token *first) // alterei  - joao
 	else
 	{
 		token->file = NULL;
+		token->err = 1;
+		ft_putstr_fd("konosubash: Error processing redirection filename\n", 2);
 	}
 	return (token);
 }
 
-t_token	*cmd_handler_args(t_token *token, t_token *first) // ALTEREI - JOAO
+t_token	*cmd_handler_args(t_token *token, t_token *first)
 {
-	t_token	*redir;
 	t_token	*arg_node;
 
-	redir = NULL;
-	while (token && token->rank != RANK_S)
+	if (!token || token->rank == RANK_S)
+		return (token);
+	while (token->next && token->next->rank != RANK_S)
 	{
-		while (token->next && token->next->rank != RANK_S)
+		if (token->next->coretype == REDIR)
+			break ;
+		else
 		{
-			if (token->next->coretype == REDIR)
+			arg_node = rm_node_lst(token->next, first);
+			if (!arg_node)
 				break ;
-			else
-			{
-				arg_node = rm_node_lst(token->next, first);
-				if (!arg_node)
-					break ;
-				join_and_split(token, arg_node);
-			}
+			join_and_split(token, arg_node);
 		}
-		if (redir)
-			add_node_lst(token, redir);
-		if (redir)
-			redir = NULL;
-		token = token->next;
 	}
-	return (first);
+	return (token);
 }
 
 t_token	*handler_args_file(t_token *token, t_token *first)
 {
 	t_token	*current;
+	t_token	*next_node;
 
 	current = token;
 	while (current)
 	{
+		next_node = current->next;
 		redir_handler_file(current, first);
 		cmd_handler_args(current, first);
-		current = current->next;
+		current = next_node;
 	}
 	return (first);
 }

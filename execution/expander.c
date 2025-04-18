@@ -73,7 +73,7 @@ char	*expand_variables(const char *input, char **env)
 	if (loop_status != 0)
 		return (free(v.result), NULL);
 	if (!append_char(&v.result, &v.res_len, &v.res_cap, '\0'))
-		return (free(v.result), perror("minishell: expand null term"), NULL);
+		return (free(v.result), perror("konosubash: expand null term"), NULL);
 	return (v.result);
 }
 
@@ -93,7 +93,7 @@ void	expand_token_list(t_token *token_list, char **env)
 			original_value = cur->value;
 			expanded = expand_variables(original_value, env);
 			if (expanded == NULL && original_value != NULL)
-				ft_putstr_fd("minishell: warning: expansion failed\n", 2);
+				ft_putstr_fd("konosubash: warning: expansion failed\n", 2);
 			else if (expanded != original_value)
 			{
 				free(original_value);

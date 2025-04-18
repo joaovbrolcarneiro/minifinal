@@ -27,7 +27,7 @@ static int	handle_single_export_arg(char *arg, char ***env)
 	{
 		if (equal)
 			*equal = '=';
-		ft_putstr_fd("minishell: export: `", 2);
+		ft_putstr_fd("konosubash: export: `", 2);
 		ft_putstr_fd(arg, 2);
 		ft_putstr_fd("': not a valid identifier\n", 2);
 		return (1);
@@ -69,7 +69,7 @@ static int	print_sorted_env(char ***env)
 
 	sorted = sort_env(*env);
 	if (!sorted)
-		return (perror("minishell: export"), 1);
+		return (perror("konosubash: export"), 1);
 	i = 0;
 	while (sorted[i])
 	{

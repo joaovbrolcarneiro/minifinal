@@ -25,13 +25,13 @@ static void	child_exec_external(t_shell *shell, char **args)
 		cmd_path = find_command_path(args[0], shell->env);
 	if (!cmd_path)
 	{
-		ft_putstr_fd("minishell: command not found: ", 2);
+		ft_putstr_fd("konosubash: command not found: ", 2);
 		ft_putstr_fd(args[0], 2);
 		ft_putstr_fd("\n", 2);
 		exit(127);
 	}
 	execve(cmd_path, args, shell->env);
-	perror("minishell: execve");
+	perror("konosubash: execve");
 	free(cmd_path);
 	if (errno == EACCES)
 		exit(126);
@@ -74,7 +74,7 @@ int	execute_external_command(t_shell *shell, char **args)
 	}
 	else if (pid < 0)
 	{
-		return (perror("minishell: fork"), 1);
+		return (perror("konosubash: fork"), 1);
 	}
 	else if (pid > 0)
 	{

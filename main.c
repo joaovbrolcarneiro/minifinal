@@ -32,22 +32,24 @@ void	typealize_call_loop(t_token *token, char **env)
 	}
 }
 
-void	merg_tok_excep_cll_revloop(t_token *token)
+void	merg_tok_excep_cll_revloop(t_token *list_head) // Takes list head now
 {
-	t_token	*first;
 	t_token	*current;
+	t_token	*previous;
 
-	first = token;
-	current = last_token(first);
-	while (current && current != first)
+	if (!list_head || !list_head->next)
+		return ;
+	current = last_token(list_head); // Assumes last_token declared
+	while (current && current != list_head)
 	{
-		token = get_prev_node(current, first);
-		if (token)
-			merge_to_token_exception(token);
-		current = token;
+		previous = get_prev_node(current, list_head); // Assumes get_prev_node declared
+		if (previous)
+		{
+			// Call merge on the previous node, passing the ACTUAL list head
+			merge_to_token_exception(previous, list_head);
+		}
+		current = previous;
 	}
-	if (first)
-		merge_to_token_exception(first);
 }
 
 void	quote_handler_call_loop(t_token *token, char **env)

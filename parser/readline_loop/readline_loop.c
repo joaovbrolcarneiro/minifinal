@@ -6,14 +6,14 @@
 /*   By: jbrol-ca <jbrol-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 18:31:39 by hde-barr          #+#    #+#             */
-/*   Updated: 2025/04/17 17:02:22 by jbrol-ca         ###   ########.fr       */
+/*   Updated: 2025/04/18 18:11:57 by jbrol-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-#include "minishell_part2.h"
+#include "../../includes/minishell.h"
+#include "../../includes/minishell_part2.h"
 
-void	readline_loop(t_shell *shell) // ALTEREI - JOAO
+void	readline_loop(t_shell *shell) // alterei - JOAO
 {
 	char	*input;
 
@@ -32,11 +32,11 @@ void	readline_loop(t_shell *shell) // ALTEREI - JOAO
 			add_history(input);
 		if (!ft_strlen(input))
 		{
-			free(input);
+			free(input); // free?
 			continue ;
 		}
 		input_handler(shell, input);
-		free(input);
+		free(input); // free?
 	}
 }
 

@@ -10,8 +10,8 @@
 /* */
 /* ************************************************************************** */
 
-#include "minishell.h"
-#include "minishell_part2.h"
+#include "../../includes/minishell.h"
+#include "../../includes/minishell_part2.h"
 
 /* Checks for unclosed quotes */
 char	*is_quote_opened(char *input, int *is_unclosed)
@@ -85,7 +85,7 @@ static char	*handle_double_quotes(t_token *token, char **env, \
 
 	token->literal = is_operator_literal;
 	trimmed_value = ft_strtrim(original_value, "\"");
-	// free(original_value); // Freeing original value commented out
+	// free(original_value); // free?
 	if (!trimmed_value)
 	{
 		perror("ft_strtrim in quote_handler");
@@ -97,12 +97,11 @@ static char	*handle_double_quotes(t_token *token, char **env, \
 	{
 		cmd_len = quote_handler_counter(trimmed_value, env);
 		expanded_value = quote_handler_cpy(cmd_len, trimmed_value, env);
-		// free(trimmed_value); // Freeing intermediate result commented out
+		// free(trimmed_value); // free?
 		if (!expanded_value)
 		{
 			perror("quote_handler_cpy failed");
-			token->value = NULL;
-			return (NULL);
+			return (token->value = NULL, NULL);
 		}
 		token->value = expanded_value;
 	}

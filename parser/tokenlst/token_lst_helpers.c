@@ -36,7 +36,7 @@ char	**command_list_malloc(char **env)
 		return (NULL);
 	allocated_list = malloc(sizeof(char *) * (count + 1));
 	if (!allocated_list)
-		perror("minishell: malloc command list");
+		perror("konosubash: malloc command list");
 	return (allocated_list);
 }
 

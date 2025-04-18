@@ -81,9 +81,9 @@ char	**sort_env(char **env)
 		count++;
 	sorted = malloc(sizeof(char *) * (count + 1));
 	if (!sorted)
-		return (perror("minishell: sort_env malloc"), NULL);
+		return (perror("konosubash: sort_env malloc"), NULL);
 	if (duplicate_env_array(sorted, env, count) != 0)
-		return (perror("minishell: sort_env strdup"), NULL);
+		return (perror("konosubash: sort_env strdup"), NULL);
 	bubble_sort_env(sorted, count);
 	return (sorted);
 }

@@ -38,7 +38,7 @@ void	handle_exit_status(t_exp_vars *v)
 	exit_str = ft_itoa(g_exit_code);
 	if (!exit_str)
 	{
-		perror("minishell: ft_itoa");
+		perror("konosubash: ft_itoa");
 		return ;
 	}
 	append_str_to_exp_vars(v, exit_str);
@@ -78,7 +78,7 @@ void	handle_variable(t_exp_vars *v)
 	v->i += var_len;
 	if (!var_name)
 	{
-		perror("minishell: ft_substr");
+		perror("konosubash: ft_substr");
 		return ;
 	}
 	v->var_value = get_env_value_exp(var_name, v->env);

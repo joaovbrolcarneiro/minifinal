@@ -21,7 +21,7 @@ void	save_std_fds(t_shell *shell)
 	shell->saved_stdout = dup(STDOUT_FILENO);
 	if (shell->saved_stdin == -1 || shell->saved_stdout == -1)
 	{
-		perror("minishell: save_std_fds: dup failed");
+		perror("konosubash: save_std_fds: dup failed");
 		if (shell->saved_stdin != -1)
 			close(shell->saved_stdin);
 		if (shell->saved_stdout != -1)
@@ -39,14 +39,14 @@ void	restore_std_fds(t_shell *shell)
 	if (shell->saved_stdin != -1)
 	{
 		if (dup2(shell->saved_stdin, STDIN_FILENO) == -1)
-			perror("minishell: restore_std_fds: dup2 stdin failed");
+			perror("konosubash: restore_std_fds: dup2 stdin failed");
 		close(shell->saved_stdin);
 		shell->saved_stdin = -1;
 	}
 	if (shell->saved_stdout != -1)
 	{
 		if (dup2(shell->saved_stdout, STDOUT_FILENO) == -1)
-			perror("minishell: restore_std_fds: dup2 stdout failed");
+			perror("konosubash: restore_std_fds: dup2 stdout failed");
 		close(shell->saved_stdout);
 		shell->saved_stdout = -1;
 	}
@@ -56,9 +56,9 @@ void	restore_std_fds(t_shell *shell)
 void	restore_fds(int fds[2])
 {
 	if (dup2(fds[0], STDIN_FILENO) == -1)
-		perror("minishell: restore_fds: dup2 stdin failed");
+		perror("konosubash: restore_fds: dup2 stdin failed");
 	if (dup2(fds[1], STDOUT_FILENO) == -1)
-		perror("minishell: restore_fds: dup2 stdout failed");
+		perror("konosubash: restore_fds: dup2 stdout failed");
 }
 
 /* Closes file descriptors in a temporary array */

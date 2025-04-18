@@ -86,7 +86,7 @@ int	execute_pipe_command(t_shell *shell, t_node_tree *node)
 	if (!node || !node->left || !node->right)
 		return (2);
 	if (setup_pipes(pipefd) < 0)
-		return (perror("minishell: pipe"), 1);
+		return (perror("konosubash: pipe"), 1);
 	pid1 = fork_left_checked(shell, node, pipefd);
 	if (pid1 < 0)
 		return (1);

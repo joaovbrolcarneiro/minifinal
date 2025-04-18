@@ -19,7 +19,7 @@ int	save_original_fds(int original_fds[2])
 	original_fds[1] = dup(STDOUT_FILENO);
 	if (original_fds[0] == -1 || original_fds[1] == -1)
 	{
-		perror("minishell: dup original fds");
+		perror("konosubash: dup original fds");
 		if (original_fds[0] != -1)
 			close(original_fds[0]);
 		return (1);
@@ -49,7 +49,7 @@ int	execute_redir_cmd_node(t_shell *shell, t_node_tree *redir_node)
 		status = execute_ast(shell, cmd_node);
 	else
 	{
-		ft_putstr_fd("minishell: syntax error near redirection\n", 2);
+		ft_putstr_fd("konosubash: syntax error near redirection\n", 2);
 		status = 2;
 	}
 	return (status);
@@ -74,7 +74,7 @@ static int	dispatch_ast_node(t_shell *shell, t_node_tree *node)
 		status = handle_word_token_execution(node);
 	else
 	{
-		ft_putstr_fd("minishell: execute_ast: Unknown node type ", 2);
+		ft_putstr_fd("konosubash: execute_ast: Unknown node type ", 2);
 		ft_putnbr_fd(node->type, 2);
 		ft_putstr_fd("\n", 2);
 		status = 1;

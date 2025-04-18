@@ -6,7 +6,7 @@
 /*   By: jbrol-ca <jbrol-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 18:05:15 by hde-barr          #+#    #+#             */
-/*   Updated: 2025/04/17 17:52:03 by jbrol-ca         ###   ########.fr       */
+/*   Updated: 2025/04/18 18:11:31 by jbrol-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "minishell_part2.h"
 
 
-t_token	*delegated_by_input_handler(char *input, char **env) // ALTEREI - JOAO
+t_token	*delegated_by_input_handler(char *input, char **env) // alterei - JOAO
 {
 	t_token	*first;
 	t_token	*token;
@@ -43,7 +43,7 @@ t_token *delegated_by_input_handler(char *input, char **env) -- FUNCAO ANTIGA
 	return (token);
 }*/
 
-void	input_handler(t_shell *shell, char *input) // - ALTEREI JOAO
+void	input_handler(t_shell *shell, char *input)
 {
 	t_token		*token;
 	t_node_tree	*tree;
@@ -68,8 +68,8 @@ void	input_handler(t_shell *shell, char *input) // - ALTEREI JOAO
 	{
 		g_exit_code = 2;
 	}
-	// free_tokens(token); free?
-	// free_ast(tree); free?
+	// free_tokens(token);
+	// free_ast(tree);
 }
 
 /*void input_handler(char **env, char *input) ---- FUNCAO ANTIGA

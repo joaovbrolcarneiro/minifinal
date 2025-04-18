@@ -20,7 +20,7 @@ static char	**prepare_cmd_args(t_node_tree *node)
 	cmd_args = malloc(sizeof(char *) * 2);
 	if (!cmd_args)
 	{
-		perror("minishell: malloc");
+		perror("konosubash: malloc");
 		return (NULL);
 	}
 	cmd_args[0] = node->content;
@@ -34,12 +34,12 @@ static int	check_simple_cmd_node(t_node_tree *node)
 {
 	if (!node)
 	{
-		ft_putstr_fd("minishell: Error: execute_simple_command: NULL\n", 2);
+		ft_putstr_fd("konosubash: Error: execute_simple_command: NULL\n", 2);
 		return (1);
 	}
 	if (node->type != AST_COMMAND)
 	{
-		ft_putstr_fd("minishell: Error: execute_simple_command node type ", 2);
+		ft_putstr_fd("konosubash: Error: execute_simple_command node type ", 2);
 		ft_putnbr_fd(node->type, 2);
 		ft_putstr_fd("\n", 2);
 		return (1);

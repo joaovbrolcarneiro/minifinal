@@ -20,7 +20,7 @@ void	left_child(t_shell *shell, t_node_tree *left, int pipefd[2])
 	close(pipefd[0]);
 	if (dup2(pipefd[1], STDOUT_FILENO) == -1)
 	{
-		perror("minishell: dup2 stdout left_child");
+		perror("konosubash: dup2 stdout left_child");
 		exit(EXIT_FAILURE);
 	}
 	close(pipefd[1]);
@@ -36,7 +36,7 @@ void	right_child(t_shell *shell, t_node_tree *right, int pipefd[2])
 	close(pipefd[1]);
 	if (dup2(pipefd[0], STDIN_FILENO) == -1)
 	{
-		perror("minishell: dup2 stdin right_child");
+		perror("konosubash: dup2 stdin right_child");
 		exit(EXIT_FAILURE);
 	}
 	close(pipefd[0]);
@@ -56,7 +56,7 @@ int	fork_left(t_shell *shell, t_node_tree *node, int pipefd[2])
 	}
 	else if (pid < 0)
 	{
-		perror("minishell: fork");
+		perror("konosubash: fork");
 		return (-1);
 	}
 	return (pid);
@@ -74,7 +74,7 @@ int	fork_right(t_shell *shell, t_node_tree *node, int pipefd[2])
 	}
 	else if (pid < 0)
 	{
-		perror("minishell: fork");
+		perror("konosubash: fork");
 		return (-1);
 	}
 	return (pid);

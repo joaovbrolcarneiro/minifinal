@@ -19,8 +19,6 @@ void	handle_parent_signals(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-/* --- Heredoc functions (Should ideally be in executor_redir_utils.c) --- */
-
 /* Helper: Checks if line matches heredoc delimiter */
 static bool	is_heredoc_delim(const char *line, const char *delimiter)
 {
@@ -34,7 +32,6 @@ static bool	is_heredoc_delim(const char *line, const char *delimiter)
 	return (match_name && match_end);
 }
 
-/* Helper: Reads heredoc lines until delimiter or EOF */
 /* Returns 0 on success, -1 on write error */
 static int	read_heredoc_lines(int pipe_write_fd, const char *delimiter)
 {
@@ -46,7 +43,7 @@ static int	read_heredoc_lines(int pipe_write_fd, const char *delimiter)
 		line = get_next_line(STDIN_FILENO);
 		if (line == NULL)
 		{
-			ft_putstr_fd("minishell: warning: here-document delimited EOF", 2);
+			ft_putstr_fd("konosubash: warning: here-document delimited EOF", 2);
 			ft_putstr_fd(" (wanted `", 2);
 			ft_putstr_fd((char *)delimiter, 2);
 			ft_putstr_fd("')\n", 2);
@@ -58,7 +55,7 @@ static int	read_heredoc_lines(int pipe_write_fd, const char *delimiter)
 			return (0);
 		}
 		if (write(pipe_write_fd, line, ft_strlen(line)) == -1)
-			return (perror("minishell: write heredoc pipe"), free(line), -1);
+			return (perror("konosubash: write heredoc pipe"), free(line), -1);
 		free(line);
 	}
 }

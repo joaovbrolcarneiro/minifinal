@@ -6,69 +6,58 @@
 /*   By: jbrol-ca <jbrol-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 17:25:45 by hde-barr          #+#    #+#             */
-/*   Updated: 2025/04/17 21:30:35 by jbrol-ca         ###   ########.fr       */
+/*   Updated: 2025/04/18 18:08:58 by jbrol-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "minishell_part2.h"
 
-t_token *find_right_token(t_token *token, t_token *eof)
+t_token	*find_left_token(t_token *t, t_token *first)
 {
-	t_token *father;
-	int i;
+	t_token	*highest_node;
+	t_token	*current;
 
-	i = 0;
-	if(!token)
-		return(NULL);
-	if(token->next == eof || !token->next || token == eof)
+	highest_node = NULL;
+	if (!t || t == first)
 		return (NULL);
-	father = token;
-	token = token->next;
-	while (1)
+	current = first;
+	while (current && current != t)
 	{
-		if(father->rank - i == token->rank)
-			return (token);
-		if (father->rank - i == RANK_F)
-			return (NULL);
-		token = token->next;
-		if(token == eof)
+		if (!current->used)
 		{
-			i++;
-			token = father->next;
+			if (!highest_node || current->rank >= highest_node->rank)
+			{
+				highest_node = current;
+			}
 		}
+		current = current->next;
 	}
-	return (token);
+	return (highest_node);
 }
 
-t_token *find_left_token(t_token *token, t_token *first)
+/* Finds highest priority unused token AFTER current token 't' until 'eof' */
+t_token	*find_right_token(t_token *t, t_token *eof)
 {
-	t_token *eof;
-	int i;
+	t_token	*highest_node;
+	t_token	*current;
 
-	i = 0;
-	if (token == first || !token || !first)
-		return(NULL);
-	eof = token;
-	token = get_prev_node(token, first);
-	while (1)
+	highest_node = NULL;
+	if (!t || t == eof)
+		return (NULL);
+	current = t->next;
+	while (current && current != eof)
 	{
-		if(eof->rank - i == token->rank)
-			return (token);
-		//?????????
-		/*if(eof->rank - i < token->rank )
-			return (NULL);*/
-		//?????????
-		if (eof->rank - i == RANK_F)
-			return (NULL);
-		token = get_prev_node(token, first);
-		if(token == NULL)
+		if (!current->used)
 		{
-			i++;
-			token = get_prev_node(eof, first);
+			if (!highest_node || current->rank >= highest_node->rank)
+			{
+				highest_node = current;
+			}
 		}
+		current = current->next;
 	}
-	return (token);
+	return (highest_node);
 }
 
 t_node_tree *new_yggnode(t_token *token)

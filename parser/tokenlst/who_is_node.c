@@ -6,12 +6,12 @@
 /*   By: jbrol-ca <jbrol-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 17:11:59 by hde-barr          #+#    #+#             */
-/*   Updated: 2025/04/17 18:00:27 by jbrol-ca         ###   ########.fr       */
+/*   Updated: 2025/04/17 19:16:29 by jbrol-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-#include "minishell_part2.h"
+#include "../../includes/minishell.h"
+#include "../../includes/minishell_part2.h"
 
 bool is_redir_super(char *input)
 {

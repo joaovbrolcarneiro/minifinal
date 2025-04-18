@@ -47,7 +47,7 @@ void	apply_variable_assignment(t_shell *shell, t_token *token_list)
 			*equal_sign = '\0';
 			if (update_env(&shell->env, current->value, equal_sign + 1) != 0)
 			{
-				perror("minishell: update_env");
+				perror("konosubash: update_env");
 			}
 			*equal_sign = '=';
 		}
@@ -71,7 +71,7 @@ void	expand_token_list_no_assignments(t_token *token_list, char **env)
 			original_value = cur->value;
 			expanded = expand_variables(original_value, env);
 			if (expanded == NULL && original_value != NULL)
-				ft_putstr_fd("minishell: warning: expansion failed\n", 2);
+				ft_putstr_fd("konosubash: warning: expansion failed\n", 2);
 			else if (expanded != original_value)
 			{
 				free(original_value);
@@ -103,7 +103,7 @@ int	exp_var_init(t_exp_vars *v, const char *input, char **env)
 	v->var_value = NULL;
 	v->result = malloc(v->res_cap);
 	if (!v->result)
-		return (perror("minishell: exp_var_init malloc"), 1);
+		return (perror("konosubash: exp_var_init malloc"), 1);
 	v->result[0] = '\0';
 	return (0);
 }
