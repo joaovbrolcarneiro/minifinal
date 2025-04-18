@@ -6,7 +6,7 @@
 /*   By: jbrol-ca <jbrol-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 17:25:45 by hde-barr          #+#    #+#             */
-/*   Updated: 2025/04/18 18:08:58 by jbrol-ca         ###   ########.fr       */
+/*   Updated: 2025/04/18 23:54:54 by jbrol-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,8 +115,61 @@ t_node_tree *new_yggnode(t_token *token)
     return (new_node);
 }*/
 
-t_node_tree	*make_yggdrasil(t_token *t, t_token *f, t_token *e, t_node_tree *y)////////yggdrasil
+t_node_tree *make_yggdrasil(t_token *t, t_token *f, t_token *e, t_node_tree *y)
 {
+    if (!y)
+        y = new_yggnode(t);
+
+    // Handle redirection nodes differently
+    if (t && t->coretype == REDIR) {
+        // Left child: command + arguments
+        y->left = build_command_subtree(f, t);
+        
+        // Right child: redirection target file
+        if (t->next && !t->next->used) {
+            y->right = new_yggnode(t->next);
+            t->next->used = true;
+        }
+    } else {
+        // Original logic for other node types
+        y->left = new_yggnode(find_left_token(t, f));
+        y->right = new_yggnode(find_right_token(t, e));
+    }
+
+    if (y->left && y->left->content)
+        make_yggdrasil(find_left_token(t, f), f, t, y->left);
+    if (y->right && y->right->content)
+        make_yggdrasil(find_right_token(t, e), f, e, y->right);
+
+    return (y);
+}
+
+// Helper function to build command+arguments subtree
+t_node_tree *build_command_subtree(t_token *first, t_token *redir)
+{
+    t_node_tree *root = NULL;
+    t_node_tree *current = NULL;
+    t_token *tmp = first;
+
+    while (tmp && tmp != redir) {
+        if (!tmp->used && tmp->coretype != REDIR) {
+            t_node_tree *new = new_yggnode(tmp);
+            if (!root) {
+                root = new;
+                current = root;
+            } else {
+                current->right = new;
+                current = current->right;
+            }
+            tmp->used = true;
+        }
+        tmp = tmp->next;
+    }
+    return (root);
+}
+
+/*t_node_tree	*make_yggdrasil(t_token *t, t_token *f, t_token *e, t_node_tree *y)////////yggdrasil
+{ FUNCAO ANTIGA
 	//validation_tree(t, f);
 	//take_args();
 	if(!y)
@@ -129,3 +182,4 @@ t_node_tree	*make_yggdrasil(t_token *t, t_token *f, t_token *e, t_node_tree *y)/
 		make_yggdrasil(find_right_token(t, e), f, e, y->right);
 	return (y);
 }
+*/

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_node1.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hde-barr <hde-barr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jbrol-ca <jbrol-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 16:49:49 by hde-barr          #+#    #+#             */
-/*   Updated: 2025/04/02 16:52:07 by hde-barr         ###   ########.fr       */
+/*   Updated: 2025/04/18 23:53:20 by jbrol-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ t_token *new_pipe(t_token *token)
 	return (token);
 }
 
-t_token *new_redir(t_token *token)
+/*t_token *new_redir(t_token *token) funcao antiga
 {
 	token->used = false;
 	token->rank = RANK_S;
@@ -58,6 +58,32 @@ t_token *new_redir(t_token *token)
 	}
 	//token->next = NULL;
 	return (token);
+}
+*/
+
+t_token *new_redir(t_token *token) // -alterei - joao
+{
+    token->used = false;
+    token->rank = RANK_A;  // mudei RANK_S to higher priority
+    token->id = get_token_id();
+    
+    if(ft_strcmp("<<", token->value) == 0)
+        token->type = TOKEN_HEREDOC;
+    else if(ft_strcmp(">>", token->value) == 0)
+        token->type = TOKEN_APPEND;
+    else if(*token->value == '<')
+        token->type = TOKEN_REDIR_IN;
+    else if(*token->value == '>')
+        token->type = TOKEN_REDIR_OUT;
+        
+    token->coretype = REDIR;
+    
+    if(token->literal == true) {
+        token->type = TOKEN_WORD;
+        token->rank = RANK_C;
+        token->coretype = TOKEN_WORD;
+    }
+    return (token);
 }
 
 t_token *new_cmd(t_token *token)

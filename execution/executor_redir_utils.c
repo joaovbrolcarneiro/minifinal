@@ -27,8 +27,33 @@ int	save_original_fds(int original_fds[2])
 	return (0);
 }
 
+int execute_redir_cmd_node(t_shell *shell, t_node_tree *redir_node)
+{
+    t_node_tree *cmd_node;
+    int status;
+
+    cmd_node = redir_node->left;
+    if (!cmd_node) {
+        ft_putstr_fd("konosubash: syntax error: missing command\n", 2);
+        return (2);
+    }
+
+    // Execute command with arguments
+    status = execute_ast(shell, cmd_node);
+
+    // Special case: if command node is word token
+    if (cmd_node->type == TOKEN_WORD) {
+        ft_putstr_fd("konosubash: ", 2);
+        ft_putstr_fd(cmd_node->content, 2);
+        ft_putstr_fd(": command not found\n", 2);
+        return (127);
+    }
+    
+    return (status);
+}
+
 /* Finds and executes the command node associated with a redirection node */
-int	execute_redir_cmd_node(t_shell *shell, t_node_tree *redir_node)
+/*int	execute_redir_cmd_node(t_shell *shell, t_node_tree *redir_node)
 {
 	t_node_tree	*cmd_node;
 	int			status;
@@ -53,7 +78,7 @@ int	execute_redir_cmd_node(t_shell *shell, t_node_tree *redir_node)
 		status = 2;
 	}
 	return (status);
-}
+}*/
 
 /* Static helper to dispatch execution based on node type */
 /* Called only by execute_ast within this file */

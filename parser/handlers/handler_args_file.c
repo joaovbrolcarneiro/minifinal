@@ -150,8 +150,29 @@ t_token	*cmd_handler_args(t_token *token, t_token *first)
 	return (token);
 }
 
-/* Top-level handler for arguments and file associations */
-t_token	*handler_args_file(t_token *token, t_token *first)
+t_token *handler_args_file(t_token *token, t_token *first) // alterei joao
+{
+    t_token *current = token;
+    t_token *prev = NULL;
+
+    while (current) {
+        // Process redirections first
+        current = redir_handler_file(current, first);
+        
+        // Then handle command arguments
+        if (current->coretype == TOKEN_CMD || 
+            current->coretype == TOKEN_WORD) {
+            cmd_handler_args(current, first);
+        }
+        
+        prev = current;
+        current = current->next;
+    }
+    return (first);
+}
+
+/* Top-level handler for arguments and file associations FUNCAO ANTIGA*/
+/*t_token	*handler_args_file(t_token *token, t_token *first)
 {
 	t_token	*current;
 	t_token	*next_node;
@@ -165,4 +186,4 @@ t_token	*handler_args_file(t_token *token, t_token *first)
 		current = next_node;
 	}
 	return (first);
-}
+}*/
