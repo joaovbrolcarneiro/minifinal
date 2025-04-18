@@ -1,125 +1,120 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   handler_args_file.c                                :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jbrol-ca <jbrol-ca@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/02 17:38:59 by hde-barr          #+#    #+#             */
-/*   Updated: 2025/04/18 18:08:13 by jbrol-ca         ###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* handler_args_file.c                                :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: hde-barr <hde-barr@student.42.fr>          +#+  +:+       +#+        */
+/* */ /* Updated: 2025/04/18 18:30:00 by hde-barr         ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-#include "../../includes/minishell_part2.h"
+#include "../../includes/minishell_part2.h" // For t_token definition etc.
 
-t_token *rm_node_lst(t_token *token, t_token *first);
+// Forward declaration needed for cmd_handler_args calling join_and_split
+void		join_and_split(t_token *priv, t_token *token);
+// Forward declaration needed for handler_args_file calling handlers
+t_token		*redir_handler_file(t_token *token, t_token *first);
+t_token		*cmd_handler_args(t_token *token, t_token *first);
+// Assumes rm_node_lst and other necessary functions are declared elsewhere
 
-
-/*void join_and_split(t_token *priv, t_token *token) ---- FUNCAO ANTIGA
+/* Helper: Reallocates args array, adding new_arg. Frees old array ptr. */
+static char	**realloc_args_array(char **old_args, int old_argc, \
+									const char *new_arg)
 {
-	priv->value = ft_strjoin(priv->value, "\x1F");
-	priv->value = ft_strjoin(priv->value, token->value);
-	priv->args = ft_split(priv->value, '\x1F');
-}
-*/
+	char	**new_args;
+	int		i;
 
-/*void	join_and_split(t_token *priv, t_token *token) FUNCAO ANTIGA
-{
-	char	*temp_join1;
-	char	*temp_join2;
-	char	**args_to_free;
-
-	if (!priv || !token || !token->value)
-		return ;
-	args_to_free = priv->args;
-	if (!priv->value)
-		priv->value = ft_strdup("");
-	if (!priv->value)
-		return ;
-	temp_join1 = ft_strjoin(priv->value, "\x1F");
-	if (!temp_join1)
-		return (perror("minishell: join_and_split: strjoin1"));
-	temp_join2 = ft_strjoin(temp_join1, token->value);
-	free(temp_join1);
-	if (!temp_join2)
-		return (perror("minishell: join_and_split: strjoin2"));
-	priv->args = ft_split(temp_join2, '\x1F');
-	free(temp_join2);
-	if (args_to_free)
-		ft_free_strarray(args_to_free);
-	if (!priv->args)
-		perror("minishell: join_and_split: ft_split");
-}*/
-
-static char	*create_full_join_str(t_token *priv, t_token *token)
-{
-	char	*temp_join1;
-	char	*temp_join2;
-	char	*priv_val_or_empty;
-
-	priv_val_or_empty = priv->value;
-	if (!priv_val_or_empty)
-		priv_val_or_empty = "";
-	temp_join1 = ft_strjoin(priv_val_or_empty, "\x1F");
-	if (!temp_join1)
-		return (perror("konosubash: join_and_split: strjoin1"), NULL);
-	temp_join2 = ft_strjoin(temp_join1, token->value);
-	free(temp_join1); // free?
-	if (!temp_join2)
-		return (perror("konosubash: join_and_split: strjoin2"), NULL);
-	return (temp_join2);
+	new_args = malloc(sizeof(char *) * (old_argc + 2));
+	if (!new_args)
+		return (perror("minishell: malloc args array"), NULL);
+	i = 0;
+	while (i < old_argc)
+	{
+		new_args[i] = old_args[i];
+		i++;
+	}
+	new_args[i] = ft_strdup(new_arg);
+	if (!new_args[i])
+	{
+		perror("minishell: strdup new arg");
+		free(new_args);
+		// Old pointers in new_args[0..i-1] are aliases, not freed here.
+		// Caller needs to handle cleanup if necessary.
+		return (NULL);
+	}
+	new_args[i + 1] = NULL;
+	if (old_args)
+		free(old_args); // Free only the array structure, not content
+	return (new_args);
 }
 
-/* Joins values using separator, splits into args, handles memory */
-void	join_and_split(t_token *priv, t_token *token)
+/* Helper: Creates the initial args array {"cmd", "arg1", NULL} */
+static int	create_first_arg(t_token *priv, t_token *arg_token)
 {
-	char	*full_str;
-	char	**args_to_free;
+	char	**new_args;
 
-	if (!priv || !token || !token->value)
-		return ;
-	args_to_free = priv->args;
-	full_str = create_full_join_str(priv, token);
-	if (!full_str)
-		return ;
-	priv->args = ft_split(full_str, '\x1F');
-	free(full_str); // free?
-	if (args_to_free)
-		ft_free_strarray(args_to_free); // free?
-	if (!priv->args)
-		perror("konosubash: join_and_split: ft_split");
+	if (!priv || !priv->value || !arg_token || !arg_token->value)
+		return (1);
+	new_args = malloc(sizeof(char *) * 3);
+	if (!new_args)
+		return (perror("minishell: malloc first arg"), 1);
+	// IMPORTANT: args[0] MUST point to the original command name string
+	// for consistency and correct execution later. Do NOT strdup here.
+	new_args[0] = priv->value;
+	new_args[1] = ft_strdup(arg_token->value); // First arg VALUE is duplicated
+	if (!new_args[1])
+		return (perror("minishell: strdup first arg"), free(new_args), 1);
+	new_args[2] = NULL;
+	// If priv->args existed (shouldn't for first arg), free it
+	if (priv->args)
+		free(priv->args); // Only free the array pointer itself
+	priv->args = new_args;
+	return (0);
 }
 
-/* FUNCAO ANTIGA
-t_token *redir_handler_file(t_token *token ,t_token *first)
+/* Replaces old string join/split logic with array building logic */
+/* Adds the value of arg_token to the priv->args array */
+void	join_and_split(t_token *priv, t_token *arg_token)
 {
-	if (token->coretype == REDIR && token->next)
-		if (token->next->rank != RANK_S)
-		{
-			ft_printf(YLW"%s\n",token->value);
-			ft_printf(PNK"%s\n",token->next->value);
-			//token->next->used = true;
-			token->file = rm_node_lst(token->next, first)->value;
-		}
-	return (token);
+	int		argc;
+	char	**temp_args;
+
+	if (!priv || !arg_token || !arg_token->value)
+		return ;
+	if (priv->args == NULL) // First argument being added
+	{
+		if (create_first_arg(priv, arg_token) != 0)
+			priv->args = NULL; // Ensure args is NULL on error
+	}
+	else // Subsequent arguments
+	{
+		argc = 0;
+		while (priv->args[argc] != NULL)
+			argc++;
+		temp_args = realloc_args_array(priv->args, argc, arg_token->value);
+		// realloc_args_array frees the old priv->args pointer on success
+		if (!temp_args)
+			priv->args = NULL; // Ensure args is NULL on error
+		else
+			priv->args = temp_args;
+	}
+	// Partner's GC handles freeing the original arg_token->value string later
 }
-*/
 
-
+/* Associates filename (must be a WORD) with redirection token */
 t_token	*redir_handler_file(t_token *token, t_token *first)
 {
 	t_token	*file_node;
 
 	if (!token || token->coretype != REDIR || !token->next || \
 		token->next->type != TOKEN_WORD)
-	{
 		return (token);
-	}
 	file_node = rm_node_lst(token->next, first);
 	if (file_node)
 	{
 		token->file = file_node->value;
+		// Partner's GC handles freeing file_node struct
 	}
 	else
 	{
@@ -130,6 +125,7 @@ t_token	*redir_handler_file(t_token *token, t_token *first)
 	return (token);
 }
 
+/* Processes arguments for a command token */
 t_token	*cmd_handler_args(t_token *token, t_token *first)
 {
 	t_token	*arg_node;
@@ -145,12 +141,16 @@ t_token	*cmd_handler_args(t_token *token, t_token *first)
 			arg_node = rm_node_lst(token->next, first);
 			if (!arg_node)
 				break ;
-			join_and_split(token, arg_node);
+			join_and_split(token, arg_node); // Calls corrected logic
+			if (!token->args) // Check if join_and_split failed
+				break; // Stop processing args if malloc failed
+			// Partner's GC must handle freeing the unlinked arg_node struct
 		}
 	}
 	return (token);
 }
 
+/* Top-level handler for arguments and file associations */
 t_token	*handler_args_file(t_token *token, t_token *first)
 {
 	t_token	*current;
